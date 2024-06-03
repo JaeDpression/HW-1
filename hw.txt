@@ -1,0 +1,64 @@
+#include <iostream>
+#include <algorithm>
+#include <ctime>
+#include <cstdlib>
+#include <string>
+#include <set>
+
+using namespace std;
+
+
+string generateSecretCode() {
+    string digits = "0123456789";
+    random_shuffle(digits.begin(), digits.end());
+    return digits.substr(0, 4);
+}
+
+
+pair<int, int> getBullsAndCows(const string& secret, const string& guess) {
+    int bulls = 0, cows = 0;
+    for (int i = 0; i < 4; ++i) {
+        if (guess[i] == secret[i]) {
+            bulls++;
+        } else if (secret.find(guess[i]) != string::npos) {
+            cows++;
+        }
+    }
+    return make_pair(bulls, cows);
+}
+
+
+int main() {
+    srand(time(0)); 
+
+    string secretCode = generateSecretCode();
+    string guess;
+    int attempts = 0;
+    const int maxAttempts = 7;
+
+    cout << "Welcome to Bulls and Cows!" << endl;
+    cout << "Guess the 4-digit secret code with all unique digits. You have " << maxAttempts << " attempts." << endl;
+
+    while (attempts < maxAttempts) {
+        cout << "Attempt " << (attempts + 1) << ": ";
+        cin >> guess;
+
+        if (guess.length() != 4 || set<char>(guess.begin(), guess.end()).size() != 4) {
+            cout << "Invalid guess. Make sure it's a 4-digit number with all unique digits." << endl;
+            continue;
+        }
+
+        pair<int, int> result = getBullsAndCows(secretCode, guess);
+        cout << "Bulls: " << result.first << ", Cows: " << result.second << endl;
+
+        if (result.first == 4) {
+            cout << "Congratulations! You guessed the secret code: " << secretCode << endl;
+            return 0;
+        }
+
+        attempts++;
+    }
+
+    cout << "Sorry, you've used all attempts. The secret code was: " << secretCode << endl;
+    return 0;
+}
